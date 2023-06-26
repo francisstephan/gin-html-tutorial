@@ -1,0 +1,16 @@
+{{template "header.html"}}
+<h1 class="title">
+	Golang gingonic tutorial
+</h1>
+<p>{{ .content }}</p>
+</p>
+<form action="{{ .action }}" method="post">
+ <label for="ID">ID:</label> <br /><input type="text" id="ID" name="id" value="{{ .id }}"><br />
+ <label for="Title">Title:</label><br /><input type="text" id="Title" name="title" value="{{ .title }}" ><br />
+ <label for="Artist">Artist:</label><br /><input type="text" id="Artist" name="artist" value="{{ .artist }}" ><br />
+ <label for="Price">Price:</label><br /><input type="text" id="Price" name="price" value="{{ .price }}" ><br />
+
+ <input type="submit" value="Submit">
+</form>
+
+{{template "footer.html"}}

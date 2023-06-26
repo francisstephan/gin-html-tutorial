@@ -1,0 +1,23 @@
+{{define "header.html"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+	<link rel="shortcut icon" type="image/png" href="/assets/favicon.png"/>
+	<script type="text/javascript" src="/assets/menu.js"></script>
+	<title></title>
+</head>
+<body>
+	<div class ="header">
+	  <div id="logo"><a href="/"><img src="/assets/header.png" height="60"/></a></div>
+	  <div id="menu">
+      <button class = "menubouton" onclick='setmenu("/albums")' >List all albums</button>
+      <button class = "menubouton" onclick='listalbum()' >Get album by Id</button>
+			<button class = "menubouton" onclick='setmenu("/addalbum")' >Add new album</button>
+			<button class = "menubouton" onclick='updatealbum()' >Update album</button>
+    </div>
+  </div>
+  <div class="container">
+{{end}}
