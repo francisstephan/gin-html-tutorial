@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /gin-html-templates
+RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -o /gin-html-templates
 
 ##
 ## Deploy the application binary into a lean image
