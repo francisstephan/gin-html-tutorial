@@ -502,7 +502,7 @@ Wrote config file fly.toml
 ? Would you like to deploy now? Yes
 ```
 The docker image is built locally, after which it is pushed to fly.io. Finally you get the message:
-`Visit your newly deployed app at `https://fly.io/apps/ginhtmltemp.
+`Visit your newly deployed app at `https://ginhtmltemp.fly.dev/.
 So just go visit it.
 
 Now for a little experiment: add an album (as you did in the local version of the app), then list all albums: good, the new album is listed along with the others. Now close your computer, read a good book, have a nap, and come back to your app. List all albums again: surprise, surprise, the album you previously added has disappeared.
