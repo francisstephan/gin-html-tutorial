@@ -93,7 +93,8 @@ So try it, by running 'go run .' and pointing your browser to http://localhost:8
 
 ## Step 4 : get the /albums and /albums/:id routes working
 
-After you completed Step 3, try pointing your browser to localhost:8080/albums.
+After you completed Step 3, try pointing your browser to http://localhost:8080/albums
+
 You will get the same result as within the original web-service-gin tutorial:
 ```
 [
@@ -207,6 +208,7 @@ func getAlbumByID(c *gin.Context) {
 }
 ```
 Check it again with `go run .` You will get the same result as in the original tutorial, but this time within your template:
+
 ![screen after step 4]
 <img src="tuto/step4.png" >
 
@@ -266,23 +268,23 @@ We styled the form (within style.css) on the basis of https://www.digitalocean.c
 Modifiy the original `POST("/albums",...)` handler as follows:
 ```
 func postAlbum(c *gin.Context) {
-	var newAlbum album
-  log.Println("Prix="+c.PostForm("price"))
+    var newAlbum album
+    log.Println("Prix="+c.PostForm("price"))
     // Call Bind to bind the received form to
     // newAlbum and report possible errors
     if err := c.Bind(&newAlbum); err != nil {
-			c.HTML(http.StatusOK, "index.html", gin.H{
-			  "content": template.HTML("Error "+err.Error()),
-			})
-			return
+			  c.HTML(http.StatusOK, "index.html", gin.H{
+			    "content": template.HTML("Error "+err.Error()),
+			  })
+			  return
     }
 
     // Add the new album to the slice.
     albums = append(albums, newAlbum)
 
-		c.HTML(http.StatusOK, "index.html", gin.H{
-		  "content": template.HTML("<p>New album :</p>"+prettyPrint(newAlbum)),
-		})
+    c.HTML(http.StatusOK, "index.html", gin.H{
+        "content": template.HTML("<p>New album :</p>"+prettyPrint(newAlbum)),
+    })
 }
 ```
 We Use GinGonic `Bind` function to bind the data in the form to newAlbum (passed by reference)
@@ -455,32 +457,33 @@ ENTRYPOINT ["/gin-html-templates"]
 All lines beginning with # are comment lines.
 
 This is a 2 stage Dockerfile, each stage being marked by a FROM command.
-The first stage, named build-stage, is based on the golang:1.19 Docker image, which includes all that is needed fo golang compilation. The WORKDIR command creates an app directory (within the image's file system, not within your file system !) and sets it as working directory (to which files will be copied by the COPY command).
+
+The first stage, named build-stage, is based on the golang:1.19 Docker image, which includes all that is needed for golang compilation. The WORKDIR command creates an app directory (within the image's file system, not within your file system !) and sets it as working directory (to which files will be copied by the COPY command).
 
 The `COPY . .` command copies all files and directories in the project directory (except those specified in .dockerignore) to the app directory in the image.
 
 The `RUN go mod download` command will carry out 'go mod download' , after which all modules specified in the go.mod file will be downloaded (to the image !!), so we next can compile main.go with the `RUN CGO_ENABLED=0 GOOS=linux go build -o /gin-html-templates` which will built a binary file (-o) named `gin-html-templates`.
 
-The second stage starts with `FROM scratch AS build-release-stage` : the `scratch` image is a minimal image just allowing you to run your go binary, meaning that the final image will weigh only about 20 MB. The WORKDIR in this stage is the root of the build-release-stage image.
+The second stage starts with `FROM scratch AS build-release-stage` : the `scratch` image is a minimal image just allowing you to run your go binary, meaning that the final image will weigh about 14 MB. The WORKDIR in this stage is the root of the build-release-stage image.
 
 We then COPY the /gin-html-templates obtained at the end of the build-stage to the final image.
 We also COPY the templates and the assets directories in your local project directory to templates and assets directories in the image: these directories are required for the execution of your go program, and they will be loaded by the program on startup.
 
 The `EXPOSE 8080` line means that port 8080 will be available from the image.
 
-And finally the `ENTRYPOINT ["/gin-html-templates"]` command will mean that, when you run the image, your `go-html-templates` will be launched.
+And finally the `ENTRYPOINT ["/gin-html-templates"]` command will mean that, when you run the image, your `gin-html-templates` program will be launched.
 
 Now `build` your image with `docker build -t ghtemp .` , to be launched within your web-service-gin directory: this command asks Docker to build an image based on the Dockerfile in the present directory (hence the `.` at the end of the line). This will take some time when you do it for the first time. The image will be tagged as 'ghtemp'. Check that it has been created with `docker ps -a`.
 
-If all went well, you can now run your image : `docker run --publish 8080:8080 ghtemp`. The --publich argument (which can be shortened to -p) means that the 8080 port in the image will be fitted with the 8080 port in your system. From your browser you may check that you get now the same screens from localhost:8080, but the time the server is within the Docker image.
+If all went well, you can now run your image : `docker run --publish 8080:8080 ghtemp`. The --publish argument (which can be shortened to -p) means that the 8080 port in the image will be fitted with the 8080 port in your system. From your browser you may check that you get now the same screens from localhost:8080, but the time the server is within the Docker image.
 
 ## Step 8 : deploy to fly.io
 
-fly.io (https://fly.io/) is interesting for hobby development since it offers a 'hobby' free plan which allows for Up to 3 shared-cpu-1x 256mb  ,3GB persistent volume storage (total) and 160GB outbound data transfer.
+fly.io (https://fly.io/) is interesting for hobby development since it offers a 'hobby' free plan which allows for up to 3 shared-cpu-1x 256mb  ,3GB persistent volume storage (total) and 160GB outbound data transfer (as of July 2023).
 
-Sign up for an account https://fly.io/app/sign-up if you don't already have one. You will have to give a credit card number which will be billed only if you exceed the 'free' allowances.
+Sign up for an account at https://fly.io/app/sign-up if you don't already have one. You will have to give a credit card number which will be billed only if you exceed the 'free' allowances.
 
-You will the need to install the flyctl command line tool. On a mac this is as easy as `brew install flyctl` .
+You will then need to install the flyctl command line tool. On a mac this is as easy as `brew install flyctl` .
 
 Since you have a Dockerfile, deploying to fly.io will be a breeze: once flyctl is installed, just type, from within your project directory, `fly launch` . You will be asked a few questions, such as:
 ```
@@ -507,4 +510,4 @@ So just go visit it.
 
 Now for a little experiment: add an album (as you did in the local version of the app), then list all albums: good, the new album is listed along with the others. Now close your computer, read a good book, have a nap, and come back to your app. List all albums again: surprise, surprise, the album you previously added has disappeared.
 
-What happened ? After 6 - 7 minutes inactivity, your app was stopped. It gets started again when you send a new request from your browser, with all initial values, notably the 'albums' slice: your changes got lost. In order to save permanent changes in data, you will need another solution: either a database, or a Volume...
+What happened ? After 6 - 7 minutes inactivity, your app was stopped. It gets started again when you send a new request from your browser, with all initial values, notably the 'albums' slice: your changes got lost. In order to save permanent changes in data, you will need a persistency solution: either a database, or a Volume... More tutorials to come ...
